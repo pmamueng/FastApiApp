@@ -15,3 +15,7 @@ Python API Development
 
 * pip install FastApi:
     * `pip install fastapi[all]`
+  
+
+* Start Application:
+    * `uvicorn main:app --reload`
