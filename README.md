@@ -2,20 +2,18 @@
 Python API Development
 ---
 * Set up virtual environment:
-    * Windows: `python -m venv <virtual_venv_name>`
-    * Mac: `python3 -m venv <virtual_venv_name>`
-    * `<virtual_venv_name>` folder should be created automatically
+    * Windows: `python -m venv venv`
+    * Mac/Linux: `python3 -m venv venv`
 
 
 * Start virtual environment in terminal:
-    * Windows: `<virtual_venv_name>\Scripts\activate.bat`
-    * Mac: `<virtual_venv_name>/bin/activate`
-    * Terminal output: `(<virtual_venv_name) C:\...`
-  
+    * Windows: `venv\Scripts\activate.bat`
+    * Mac/Linux: `venv/bin/activate`
 
-* pip install FastApi:
-    * `pip install fastapi[all]`
-  
+
+* pip install requirements:
+    * `pip install -r requirements.txt`
+
 
 * Start Application:
     * `uvicorn main:app --reload`
