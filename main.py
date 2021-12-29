@@ -13,6 +13,10 @@ class Post(BaseModel):
     rating: Optional[int] = None  # Complete optional, if user doesn't provide value then nothing will be assigned
 
 
+app_posts = [{"title": "example_title_1", "content": "example_content_1", "id": 1},
+             {"title": "example_title_2", "content": "example_content_2", "id": 2}]
+
+
 @app.get("/")
 def root():
     return {"message": "Welcome to my API"}
@@ -20,12 +24,11 @@ def root():
 
 @app.get("/posts")
 def get_post():
-    return {"data": "This is your post"}
+    return {"data": app_posts}
 
 
-@app.post("/create_posts")
-def create_post(new_post: Post):
-    print(new_post)
-    print(new_post.dict())
-    return {"data": new_post}
-# title str, content str
+@app.post("/posts")
+def create_post(post: Post):
+    print(post)
+    print(post.dict())
+    return {"data": post}
