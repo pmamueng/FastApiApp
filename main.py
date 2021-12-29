@@ -18,14 +18,26 @@ app_posts = [{"title": "example_title_1", "content": "example_content_1", "id": 
              {"title": "example_title_2", "content": "example_content_2", "id": 2}]
 
 
+def find_post(id):
+    for p in app_posts:
+        if p["id"] == id:
+            return p
+
+
 @app.get("/")
 def root():
     return {"message": "Welcome to my API"}
 
 
 @app.get("/posts")
-def get_post():
+def get_posts():
     return {"data": app_posts}
+
+
+@app.get("/posts/{id}")
+def get_post(id: int):  # turn id into string and FastAPI will validate it
+    post = find_post(id)  # id is a string from path parameter, have to convert it to integer
+    return {"data": post}
 
 
 @app.post("/posts")
@@ -34,3 +46,4 @@ def create_post(post: Post):
     post_dict['id'] = randrange(0, 1000000)
     app_posts.append(post_dict)
     return {"data": post_dict}
+
