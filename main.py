@@ -24,6 +24,12 @@ def find_post(id):
             return p
 
 
+def find_index_post(id):
+    for i, p in enumerate(app_posts):
+        if p["id"] == id:
+            return i
+
+
 @app.get("/")
 def root():
     return {"message": "Welcome to my API"}
@@ -49,3 +55,25 @@ def create_post(post: Post):
     post_dict['id'] = randrange(0, 1000000)
     app_posts.append(post_dict)
     return {"data": post_dict}
+
+
+@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(id: int):
+    index = find_index_post(id)
+    if not index:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"post with id: {id} was not found")
+    app_posts.pop(index)
+    return {"message": f"post with id: {id} was successfully deleted"}
+
+
+@app.put("/posts/{id}", status_code=status.HTTP_202_ACCEPTED)
+def update_post(id: int, post: Post):
+    index = find_index_post(id)
+    if not index:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"post with id: {id} was not found")
+    post_dict = post.dict()
+    post_dict['id'] = id  # Set new post_dict to have the same id
+    app_posts[index] = post_dict  # Update (set) the old post in index with the new post_dict
+    return {"message": f"post with id: {id} was successfully updated"}
