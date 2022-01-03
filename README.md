@@ -17,3 +17,9 @@ Python API Development
 
 * Start Application:
     * `uvicorn main:app --reload`
+
+
+* FastApi Application Documentation:
+    * swagger: `localhost:8000/docs`
+    * redoc: `localhost:8000/redoc`
+    
