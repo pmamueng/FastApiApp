@@ -25,5 +25,6 @@ Python API Development
 
 
 * Database Management System: (DBMS):
-    *  Postgresql
+    * Postgresql (relational database)
+    * Unique ID
     
