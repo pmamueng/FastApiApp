@@ -26,5 +26,4 @@ Python API Development
 
 * Database Management System: (DBMS):
     * Postgresql (relational database)
-    * Unique ID
-    
+    * Utilize Psycopg library
