@@ -1,3 +1,4 @@
-fastapi
-pydantic
-psycopg2
+fastapi==0.70.1
+psycopg2==2.9.3
+pydantic==1.9.0
+pylint
