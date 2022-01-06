@@ -19,7 +19,7 @@ class Post(BaseModel):
 while True:
     try:
         db_connection = psycopg2.connect(host='localhost', database='FastApiApp', user='postgres', password='postgres',
-                                         cursor_factory=RealDictCursor)
+                                        cursor_factory=RealDictCursor)
         cursor = db_connection.cursor()
         print("Database connection was successful.")
         break
@@ -52,12 +52,15 @@ def root():
 
 @app.get("/posts")
 def get_posts():
-    return {"data": app_posts}
+    cursor.execute("""SELECT * FROM posts""")
+    posts = cursor.fetchall()
+    return {"data": posts}
 
 
 @app.get("/posts/{id}")
 def get_post(id: int):  # turn id into string and FastAPI will validate it
-    post = find_post(id)  # id is a string from path parameter, have to convert it to integer
+    cursor.execute("""SELECT * FROM posts WHERE id = %s""", [id])
+    post = cursor.fetchone()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
@@ -66,10 +69,10 @@ def get_post(id: int):  # turn id into string and FastAPI will validate it
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post):
-    post_dict = post.dict()
-    post_dict['id'] = randrange(0, 1000000)
-    app_posts.append(post_dict)
-    return {"data": post_dict}
+    cursor.execute("""INSERT INTO posts(title, content, published) VALUES (%s, %s, %s) RETURNING *""", (post.title, post.content, post.published))
+    new_post = cursor.fetchone()
+    db_connection.commit()
+    return {"data": new_post}
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
