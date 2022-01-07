@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, status, HTTPException, Response
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from random import randrange
@@ -77,21 +77,21 @@ def create_post(post: Post):
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int):
-    index = find_index_post(id)
-    if not index:
+    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""", [id])
+    deleted_post = cursor.fetchone()
+    if deleted_post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
-    app_posts.pop(index)
-    return {"message": f"post with id: {id} was successfully deleted"}
+    db_connection.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @app.put("/posts/{id}", status_code=status.HTTP_202_ACCEPTED)
 def update_post(id: int, post: Post):
-    index = find_index_post(id)
-    if not index:
+    cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *""", (post.title, post.content, post.published, id))
+    post = cursor.fetchone()
+    if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
-    post_dict = post.dict()
-    post_dict['id'] = id  # Set new post_dict to have the same id
-    app_posts[index] = post_dict  # Update (set) the old post in index with the new post_dict
-    return {"message": f"post with id: {id} was successfully updated"}
+    db_connection.commit()
+    return {"message": f"post with id: {id} was successfully updated", "data": post}
