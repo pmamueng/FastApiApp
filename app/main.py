@@ -89,9 +89,9 @@ def delete_post(id: int):
 @app.put("/posts/{id}", status_code=status.HTTP_202_ACCEPTED)
 def update_post(id: int, post: Post):
     cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *""", (post.title, post.content, post.published, id))
-    post = cursor.fetchone()
-    if not post:
+    updated_post = cursor.fetchone()
+    if not updated_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
     db_connection.commit()
-    return {"message": f"post with id: {id} was successfully updated", "data": post}
+    return {"message": f"post with id: {id} was successfully updated", "data": updated_post}
