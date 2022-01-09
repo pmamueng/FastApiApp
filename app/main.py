@@ -1,13 +1,17 @@
-from fastapi import FastAPI, status, HTTPException, Response
-from psycopg2.extras import RealDictCursor
-from pydantic import BaseModel
-from random import randrange
-
 import psycopg2
 import time
 
-app = FastAPI()
+from fastapi import Depends, FastAPI, HTTPException, Response, status
+from psycopg2.extras import RealDictCursor
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
+from app import models
+from app.database import engine, get_db
+
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
 
 class Post(BaseModel):
     title: str
@@ -89,9 +93,14 @@ def delete_post(id: int):
 @app.put("/posts/{id}", status_code=status.HTTP_202_ACCEPTED)
 def update_post(id: int, post: Post):
     cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *""", (post.title, post.content, post.published, id))
-    post = cursor.fetchone()
-    if not post:
+    updated_post = cursor.fetchone()
+    if not updated_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
     db_connection.commit()
-    return {"message": f"post with id: {id} was successfully updated", "data": post}
+    return {"message": f"post with id: {id} was successfully updated", "data": updated_post}
+
+
+@app.get("/sqlalchemy")
+def test_post(db: Session = Depends(get_db)):
+    return {"status": "success"}
