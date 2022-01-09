@@ -1,13 +1,17 @@
-from fastapi import FastAPI, status, HTTPException, Response
-from psycopg2.extras import RealDictCursor
-from pydantic import BaseModel
-from random import randrange
-
 import psycopg2
 import time
 
-app = FastAPI()
+from fastapi import Depends, FastAPI, HTTPException, Response, status
+from psycopg2.extras import RealDictCursor
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
+from app import models
+from app.database import engine, get_db
+
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
 
 class Post(BaseModel):
     title: str
@@ -95,3 +99,8 @@ def update_post(id: int, post: Post):
                             detail=f"post with id: {id} was not found")
     db_connection.commit()
     return {"message": f"post with id: {id} was successfully updated", "data": updated_post}
+
+
+@app.get("/sqlalchemy")
+def test_post(db: Session = Depends(get_db)):
+    return {"status": "success"}

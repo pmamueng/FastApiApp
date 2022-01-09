@@ -26,4 +26,6 @@ Python API Development
 
 * Database Management System: (DBMS):
     * Postgresql (relational database)
+    * Utilize Oject Relational Mapper (ORM)
+        * SQLalchemy
     * Utilize Psycopg library
