@@ -104,3 +104,18 @@ def update_post(id: int, post: Post):
 @app.get("/sqlalchemy")
 def test_post(db: Session = Depends(get_db)):
     return {"status": "success"}
+
+
+@app.get("/sqlalchemy/posts")
+def sqlachemy_get_posts(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+    posts = db.query(models.Post).offset(skip).limit(limit).all()
+    return {"data": posts}
+
+
+@app.get("/sqlalchemy/posts/{id}")
+def sqlalchemy_get_post(id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == id).first()
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"post with id: {id} was not found")
+    return {"data": post}
