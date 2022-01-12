@@ -124,7 +124,7 @@ def get_post_by_id(id: int, db: Session = Depends(get_db)):
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post, db: Session = Depends(get_db)):
-    new_post = models.Post(title = post.title, content= post.content, published = post.published)
+    new_post = models.Post(**post.dict())
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
@@ -143,11 +143,12 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 
 
 @app.put("/posts/{id}", status_code=status.HTTP_202_ACCEPTED)
-def update_post(id: int, post: Post):
-    cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *""", (post.title, post.content, post.published, id))
-    updated_post = cursor.fetchone()
-    if not updated_post:
+def update_post(id: int, updated_post: Post, db: Session = Depends(get_db)):
+    post_query = db.query(models.Post).filter(models.Post.id == id)
+    post = post_query.first()
+    if post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
-    db_connection.commit()
-    return {"message": f"post with id: {id} was successfully updated", "data": updated_post}
+    post_query.update(updated_post.dict(), synchronize_session = False)
+    db.commit()
+    return {"message": f"post with id: {id} was successfully updated", "data": post_query.first()}
