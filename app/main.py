@@ -4,6 +4,7 @@ import time
 from fastapi import Depends, FastAPI, HTTPException, Response, status
 from psycopg2.extras import RealDictCursor
 from sqlalchemy.orm import Session
+from typing import List
 
 from app import models, schemas
 from app.database import engine, get_db
@@ -99,28 +100,28 @@ def test_post(db: Session = Depends(get_db)):
     return {"status": "success"}
 
 
-@app.get("/posts")
+@app.get("/posts", response_model=List[schemas.ResponsePost])
 def get_posts(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     posts = db.query(models.Post).offset(skip).limit(limit).all()
-    return {"data": posts}
+    return posts
 
 
-@app.get("/posts/{id}")
+@app.get("/posts/{id}", response_model=schemas.ResponsePost)
 def get_post_by_id(id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
-    return {"data": post}
+    return post
 
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.ResponsePost)
 def create_post(post: schemas.CreatePost, db: Session = Depends(get_db)):
     new_post = models.Post(**post.dict())
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
-    return {"data": new_post}
+    return new_post
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -134,7 +135,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@app.put("/posts/{id}", status_code=status.HTTP_202_ACCEPTED)
+@app.put("/posts/{id}", status_code=status.HTTP_202_ACCEPTED, response_model=schemas.ResponsePost)
 def update_post(id: int, updated_post: schemas.PostBase, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()
@@ -143,4 +144,4 @@ def update_post(id: int, updated_post: schemas.PostBase, db: Session = Depends(g
                             detail=f"post with id: {id} was not found")
     post_query.update(updated_post.dict(), synchronize_session = False)
     db.commit()
-    return {"message": f"post with id: {id} was successfully updated", "data": post_query.first()}
+    return post_query.first()
