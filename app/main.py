@@ -1,51 +1,45 @@
 import psycopg2
 import time
 
-from fastapi import Depends, FastAPI, HTTPException, Response, status
+from fastapi import Depends, FastAPI
 from psycopg2.extras import RealDictCursor
-from sqlalchemy.orm import Session
-from typing import List
 
-from app import models, schemas, utils
+from app import models
 from app.database import engine, get_db
+from app.routers import post, user
 
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-while True:
-    try:
-        db_connection = psycopg2.connect(host='localhost', database='FastApiApp', user='postgres', password='postgres',
-                                        cursor_factory=RealDictCursor)
-        cursor = db_connection.cursor()
-        print("Database connection was successful.")
-        break
-    except Exception as error:
-        print(f"Connection to database failed.")
-        print("Error: ", error)
-        time.sleep(2)
+# while True:
+#     try:
+#         db_connection = psycopg2.connect(host='localhost', database='FastApiApp', user='postgres', password='postgres',
+#                                         cursor_factory=RealDictCursor)
+#         cursor = db_connection.cursor()
+#         print("Database connection was successful.")
+#         break
+#     except Exception as error:
+#         print(f"Connection to database failed.")
+#         print("Error: ", error)
+#         time.sleep(2)
 
 
-app_posts = [{"title": "example_title_1", "content": "example_content_1", "id": 1},
-             {"title": "example_title_2", "content": "example_content_2", "id": 2}]
+# app_posts = [{"title": "example_title_1", "content": "example_content_1", "id": 1},
+#              {"title": "example_title_2", "content": "example_content_2", "id": 2}]
 
 
-def find_post(id):
-    for p in app_posts:
-        if p["id"] == id:
-            return p
+# def find_post(id):
+#     for p in app_posts:
+#         if p["id"] == id:
+#             return p
 
 
-def find_index_post(id):
-    for i, p in enumerate(app_posts):
-        if p["id"] == id:
-            return i
-
-
-@app.get("/")
-def root():
-    return {"message": "Welcome to my API"}
+# def find_index_post(id):
+#     for i, p in enumerate(app_posts):
+#         if p["id"] == id:
+#             return i
 
 
 ###### Tranditional Database Integration ######
@@ -96,66 +90,9 @@ def root():
 #     return {"message": f"post with id: {id} was successfully updated", "data": updated_post}
 
 
-@app.get("/sqlalchemy")
-def test_post(db: Session = Depends(get_db)):
-    return {"status": "success"}
+app.include_router(post.router)
+app.include_router(user.router)
 
-
-@app.get("/posts", response_model=List[schemas.ResponsePost])
-def get_posts(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
-    posts = db.query(models.Post).offset(skip).limit(limit).all()
-    return posts
-
-
-@app.get("/posts/{id}", response_model=schemas.ResponsePost)
-def get_post_by_id(id: int, db: Session = Depends(get_db)):
-    post = db.query(models.Post).filter(models.Post.id == id).first()
-    if not post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"post with id: {id} was not found")
-    return post
-
-
-@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.ResponsePost)
-def create_post(post: schemas.CreatePost, db: Session = Depends(get_db)):
-    new_post = models.Post(**post.dict())
-    db.add(new_post)
-    db.commit()
-    db.refresh(new_post)
-    return new_post
-
-
-@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, db: Session = Depends(get_db)):
-    deleted_post = db.query(models.Post).filter(models.Post.id == id).first()
-    if not deleted_post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"post with id: {id} was not found")
-    db.delete(deleted_post)
-    db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-
-@app.put("/posts/{id}", status_code=status.HTTP_202_ACCEPTED, response_model=schemas.ResponsePost)
-def update_post(id: int, updated_post: schemas.PostBase, db: Session = Depends(get_db)):
-    post_query = db.query(models.Post).filter(models.Post.id == id)
-    post = post_query.first()
-    if post == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"post with id: {id} was not found")
-    post_query.update(updated_post.dict(), synchronize_session = False)
-    db.commit()
-    return post_query.first()
-
-
-@app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
-def create_post(user: schemas.CreateUser, db: Session = Depends(get_db)):
-
-    #hash the password - user.password
-    hashed_password = utils.hash(user.password)
-    user.password = hashed_password
-    new_user = models.User(**user.dict())
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+@app.get("/")
+def root():
+    return {"message": "Welcome to my API"}
