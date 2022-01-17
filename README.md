@@ -28,4 +28,13 @@ Python API Development
     * Postgresql (relational database)
     * Utilize Oject Relational Mapper (ORM)
         * SQLalchemy
-    * Utilize Psycopg library
+
+
+* Routers
+    * `auth.py`
+    * `post.py`
+    * `user.py`
+
+
+* Authentication
+    * Utilize JWT Token Authentication
