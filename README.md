@@ -31,6 +31,7 @@ Python API Development
 
 
 * Routers
+    * `auth.py`
     * `post.py`
     * `user.py`
 
