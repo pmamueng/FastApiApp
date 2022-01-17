@@ -33,3 +33,7 @@ Python API Development
 * Routers
     * `post.py`
     * `user.py`
+
+
+* Authentication
+    * Utilize JWT Token Authentication
