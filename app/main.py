@@ -1,8 +1,4 @@
-import psycopg2
-import time
-
 from fastapi import Depends, FastAPI
-from psycopg2.extras import RealDictCursor
 
 from app import models
 from app.database import engine, get_db
@@ -11,19 +7,18 @@ from app.routers import auth, post, user
 
 models.Base.metadata.create_all(bind=engine)
 
+
 app = FastAPI()
 
-# while True:
-#     try:
-#         db_connection = psycopg2.connect(host='localhost', database='FastApiApp', user='postgres', password='postgres',
-#                                         cursor_factory=RealDictCursor)
-#         cursor = db_connection.cursor()
-#         print("Database connection was successful.")
-#         break
-#     except Exception as error:
-#         print(f"Connection to database failed.")
-#         print("Error: ", error)
-#         time.sleep(2)
+
+app.include_router(auth.router)
+app.include_router(post.router)
+app.include_router(user.router)
+
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to my API"}
 
 
 # app_posts = [{"title": "example_title_1", "content": "example_content_1", "id": 1},
@@ -88,14 +83,3 @@ app = FastAPI()
 #                             detail=f"post with id: {id} was not found")
 #     db_connection.commit()
 #     return {"message": f"post with id: {id} was successfully updated", "data": updated_post}
-
-
-
-app.include_router(auth.router)
-app.include_router(post.router)
-app.include_router(user.router)
-
-
-@app.get("/")
-def root():
-    return {"message": "Welcome to my API"}
