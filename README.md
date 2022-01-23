@@ -38,3 +38,16 @@ Python API Development
 
 * Authentication
     * Utilize JWT Token Authentication
+
+
+* .env file
+```
+DATABASE_HOSTNAME=
+DATABASE_PORT=
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+DATABASE_NAME=
+SECRET_KEY=
+ALGORITHM=
+ACCESS_TOKEN_EXPIRE_MINUTES=
+```
