@@ -2,14 +2,13 @@ from fastapi import Depends, FastAPI
 
 from app import models
 from app.database import engine, get_db
+from app.config import Settings
 from app.routers import auth, post, user
 
 
 models.Base.metadata.create_all(bind=engine)
 
-
 app = FastAPI()
-
 
 app.include_router(auth.router)
 app.include_router(post.router)
