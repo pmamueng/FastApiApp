@@ -34,6 +34,7 @@ Python API Development
     * `auth.py`
     * `post.py`
     * `user.py`
+    * `vote.py`
 
 
 * Authentication
