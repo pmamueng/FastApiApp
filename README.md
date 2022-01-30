@@ -52,3 +52,19 @@ SECRET_KEY=
 ALGORITHM=
 ACCESS_TOKEN_EXPIRE_MINUTES=
 ```
+
+
+* Heroku
+```
+=== fastapiapp-maximumdevops
+Addons:         heroku-postgresql:hobby-dev
+Auto Cert Mgmt: false
+Dynos:          web: 1
+Git URL:        https://git.heroku.com/fastapiapp-maximumdevops.git
+Owner:          pmamueng.dev@gmail.com
+Region:         us
+Repo Size:      362 KB
+Slug Size:      82 MB
+Stack:          heroku-20
+Web URL:        https://fastapiapp-maximumdevops.herokuapp.com/
+```
