@@ -1,5 +1,3 @@
-from hashlib import sha256
-from tkinter import CASCADE
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
