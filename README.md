@@ -68,3 +68,9 @@ Slug Size:      82 MB
 Stack:          heroku-20
 Web URL:        https://fastapiapp-maximumdevops.herokuapp.com/
 ```
+
+
+* Docker Compose
+Start docker container: ```docker-compose up -d```
+DEV environment: ```docker-compose -f docker-compose-dev.yml up -d```
+PROD environment: ```docker-compose -f docker-compose-prod.yml up -d``` (shouldn't be used)
