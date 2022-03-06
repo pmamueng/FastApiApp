@@ -65,3 +65,23 @@ def test_create_post_default_published_true(authorized_client, test_user):
 def test_unauthorized_user_post_post(client, test_posts):
     res = client.post("/posts/", json = {"title": "test_title", "content": "test_content"})
     assert res.status_code == 401
+
+
+def test_unauthorized_user_delete_post(client, test_user, test_posts):
+    res = client.delete(f"/posts/{test_posts[0].id}")
+    assert res.status_code == 401
+
+
+def test_delete_post_success(authorized_client, test_user, test_posts):
+    res = authorized_client.delete(f"/posts/{test_posts[0].id}")
+    assert res.status_code == 204
+
+
+def test_delete_post_non_exist(authorized_client, test_user, test_posts):
+    res = authorized_client.delete(f"/posts/88888")
+    assert res.status_code == 404
+
+
+def test_delete_other_user_post(authorized_client, test_user, test_posts):
+    res = authorized_client.delete(f"/posts/{test_posts[3].id}")
+    assert res.status_code == 403
