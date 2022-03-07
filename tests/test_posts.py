@@ -1,7 +1,6 @@
 import pytest
 
 from app import schemas
-from tests.conftest import authorized_client
 
 
 def test_get_all_posts(authorized_client, test_posts):
