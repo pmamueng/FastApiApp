@@ -1,4 +1,4 @@
-# FastApiApp
+# FastApiApp ![GitHub_Actions](https://github.com/pmamueng/FastApiApp/actions/workflows/build-deploy.yaml/badge.svg)
 Python API Development
 ---
 * Set up virtual environment:
