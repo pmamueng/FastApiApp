@@ -33,7 +33,7 @@ app.include_router(vote.router)
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to my API"}
+    return {"message": "Welcome to my API, successfully deployed from CI/CD pipeline"}
 
 
 # app_posts = [{"title": "example_title_1", "content": "example_content_1", "id": 1},
